@@ -46,4 +46,11 @@ class TaskRepositoryImpl implements TaskRepository {
   void deleteTask(String id) {
     _tasks.removeWhere((t) => t.id == id);
   }
+
+  @override
+  void replaceAll(List<Task> tasks) {
+    _tasks
+      ..clear()
+      ..addAll(tasks);
+  }
 }

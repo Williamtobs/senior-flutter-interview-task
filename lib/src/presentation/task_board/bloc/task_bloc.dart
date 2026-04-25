@@ -33,8 +33,13 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   }
 
   void _onMove(MoveTaskEvent event, Emitter<TaskState> emit) {
-    final tasks = repository.getTasks();
-    final task = tasks.firstWhere((t) => t.id == event.taskId);
+    final currentTasks = List<Task>.from(repository.getTasks());
+
+    final taskIndex = currentTasks.indexWhere((t) => t.id == event.taskId);
+
+    if (taskIndex == -1) return;
+
+    final task = currentTasks.removeAt(taskIndex); // ✅ remove FIRST
 
     final updated = Task(
       id: task.id,
@@ -45,8 +50,30 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       dueDate: task.dueDate,
     );
 
-    repository.updateTask(updated);
-    add(LoadTasks());
+    // 🔥 get only target column tasks AFTER removal
+    final targetTasks = currentTasks
+        .where((t) => t.status == event.newStatus)
+        .toList();
+
+    int insertIndex = event.newIndex ?? targetTasks.length;
+
+    insertIndex = insertIndex.clamp(0, targetTasks.length);
+
+    // 🔥 find global insert position
+    final globalInsertIndex = currentTasks.indexWhere(
+      (t) => t.status == event.newStatus,
+    );
+
+    if (globalInsertIndex == -1) {
+      // no items in that column → just add
+      currentTasks.add(updated);
+    } else {
+      currentTasks.insert(globalInsertIndex + insertIndex, updated);
+    }
+
+    repository.replaceAll(currentTasks);
+
+    emit(_group(currentTasks)); // ✅ no need for LoadTasks()
   }
 
   TaskState _group(List<Task> tasks) {
@@ -56,8 +83,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       TaskStatus.done: <Task>[],
     };
 
-    for (final t in tasks) {
-      map[t.status]!.add(t);
+    for (final task in tasks) {
+      map[task.status]!.add(task);
     }
 
     return TaskState(groupedTasks: map);

@@ -12,6 +12,7 @@ class CreateTaskEvent extends TaskEvent {
 class MoveTaskEvent extends TaskEvent {
   final String taskId;
   final TaskStatus newStatus;
+  final int? newIndex;
 
-  MoveTaskEvent(this.taskId, this.newStatus);
+  MoveTaskEvent(this.taskId, this.newStatus, {this.newIndex});
 }

@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:swamp_task_management_app/src/domain/task/entities/task.dart';
+import 'package:swamp_task_management_app/src/presentation/task_board/bloc/task_bloc.dart';
+import 'package:swamp_task_management_app/src/presentation/task_board/bloc/task_event.dart';
 import 'package:swamp_task_management_app/src/presentation/task_board/controller/drag_controller.dart';
 
 class TaskCard extends StatelessWidget {
@@ -15,18 +17,39 @@ class TaskCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final drag = context.read<DragController>();
 
-    return LongPressDraggable<Task>(
-      data: task,
-      feedback: const SizedBox.shrink(),
-      childWhenDragging: Opacity(opacity: 0.0, child: _cardBody()),
-      onDragStarted: () {
+    return GestureDetector(
+      onLongPressStart: (details) {
         HapticFeedback.mediumImpact();
-        drag.startDrag(task, Offset.zero);
+        drag.startDrag(task, details.globalPosition);
       },
-      onDragUpdate: (details) {
+      onLongPressMoveUpdate: (details) {
         drag.updatePosition(details.globalPosition);
+
+        for (final entry in drag.columnBounds.entries) {
+          if (entry.value.contains(details.globalPosition)) {
+            drag.updateHover(entry.key);
+            return;
+          }
+        }
+
+        drag.updateHover(null);
       },
-      onDragEnd: (_) {
+      onLongPressEnd: (details) {
+        final drag = context.read<DragController>();
+        drag.updatePosition(details.globalPosition);
+
+        final hover = drag.getHoverAtPosition(details.globalPosition);
+
+        if (hover != null && drag.draggingTask != null) {
+          context.read<TaskBloc>().add(
+            MoveTaskEvent(
+              drag.draggingTask!.id,
+              hover,
+              newIndex: drag.targetIndex,
+            ),
+          );
+        }
+
         drag.endDrag();
       },
       child: _cardBody(),

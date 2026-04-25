@@ -5,4 +5,5 @@ abstract class TaskRepository {
   void createTask(Task task);
   void updateTask(Task task);
   void deleteTask(String id);
+  void replaceAll(List<Task> tasks);
 }
