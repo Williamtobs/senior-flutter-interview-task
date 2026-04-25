@@ -7,28 +7,25 @@ class TaskBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Row(
         children: const [
-          SizedBox(
-            width: 300,
+          Expanded(
             child: _LabeledTaskColumn(
               title: 'To Do',
               subtitle: 'Tasks waiting to start',
               status: TaskStatus.todo,
             ),
           ),
-          SizedBox(
-            width: 300,
+          Expanded(
             child: _LabeledTaskColumn(
               title: 'In Progress',
               subtitle: 'Tasks currently being worked on',
               status: TaskStatus.inProgress,
             ),
           ),
-          SizedBox(
-            width: 300,
+          Expanded(
             child: _LabeledTaskColumn(
               title: 'Done',
               subtitle: 'Tasks completed successfully',
