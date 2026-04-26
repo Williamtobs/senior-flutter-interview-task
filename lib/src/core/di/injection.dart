@@ -1,10 +1,13 @@
 import 'package:get_it/get_it.dart';
+import 'package:swamp_task_management_app/src/data/document/repositories/document_repository_impl.dart';
 import 'package:swamp_task_management_app/src/data/task/repositories/task_repository_impl.dart';
+import 'package:swamp_task_management_app/src/domain/document/repositories/document_repositories.dart';
 import 'package:swamp_task_management_app/src/domain/task/repositories/task_repositories.dart';
 import 'package:swamp_task_management_app/src/domain/task/usecases/create_task.dart';
 import 'package:swamp_task_management_app/src/domain/task/usecases/delete_task.dart';
 import 'package:swamp_task_management_app/src/domain/task/usecases/move_task.dart';
 import 'package:swamp_task_management_app/src/domain/task/usecases/update_task.dart';
+import 'package:swamp_task_management_app/src/presentation/document_dashboard/bloc/document_bloc.dart';
 import 'package:swamp_task_management_app/src/presentation/task_board/bloc/task_bloc.dart';
 
 final sl = GetIt.instance;
@@ -19,6 +22,7 @@ Future<void> _taskModule() async {
   sl.registerFactory(
     () => TaskBloc(createTask: sl(), moveTask: sl(), repository: sl()),
   );
+  sl.registerFactory(() => DocumentBloc(repository: sl()));
 
   // Use cases
   sl.registerLazySingleton(() => CreateTask(sl()));
@@ -28,4 +32,5 @@ Future<void> _taskModule() async {
 
   // Repository
   sl.registerLazySingleton<TaskRepository>(() => TaskRepositoryImpl());
+  sl.registerLazySingleton<DocumentRepository>(() => DocumentRepositoryImpl());
 }
