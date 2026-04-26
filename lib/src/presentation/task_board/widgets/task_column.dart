@@ -106,7 +106,7 @@ class _TaskListState extends State<_TaskList> {
 
         return Consumer<DragController>(
           builder: (context, drag, _) {
-            // 🔥 trigger auto scroll when dragging
+            // trigger auto scroll when dragging
             // if (drag.isDragging) {
             //   WidgetsBinding.instance.addPostFrameCallback((_) {
             //     if (mounted) _handleAutoScroll(drag);
