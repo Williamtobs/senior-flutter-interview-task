@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:swamp_task_management_app/src/domain/document/repositories/document_repositories.dart';
 import 'package:swamp_task_management_app/src/presentation/document_dashboard/bloc/document_event.dart';
@@ -13,16 +11,11 @@ class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
     on<DocumentStatusUpdated>(_onStatusUpdated);
   }
 
-  StreamSubscription? _subscription;
-
   void _onUpload(UploadDocumentEvent event, Emitter<DocumentState> emit) async {
     final document = await repository.uploadDocument(event.file, event.type);
     emit(DocumentState(documents: [...state.documents, document]));
 
-    _subscription?.cancel();
-    _subscription = repository.watchDocumentStatus(document.id).listen((
-      updated,
-    ) {
+    repository.watchDocumentStatus(document.id).listen((updated) {
       add(DocumentStatusUpdated(updated));
     });
   }
