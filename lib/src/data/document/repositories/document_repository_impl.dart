@@ -10,7 +10,9 @@ class DocumentRepositoryImpl implements DocumentRepository {
   @override
   Stream<Document> watchDocumentStatus(String id) async* {
     try {
-      yield* _mockWebSocket(id);
+      await for (final document in _mockWebSocket(id)) {
+        yield document;
+      }
     } catch (e) {
       print('WebSocket error: $e. Falling back to polling.');
       yield* _pollingFallback(id);
@@ -73,7 +75,7 @@ class DocumentRepositoryImpl implements DocumentRepository {
 
   Stream<Document> _pollingFallback(String id) async* {
     while (true) {
-      await Future.delayed(const Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 2));
 
       final doc = await getStatus(id);
 
