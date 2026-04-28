@@ -16,7 +16,7 @@ class TaskColumn extends StatefulWidget {
   State<TaskColumn> createState() => _TaskColumnState();
 }
 
-class _TaskColumnState extends State<TaskColumn> {
+class _TaskColumnState extends State<TaskColumn> with WidgetsBindingObserver {
   final GlobalKey _key = GlobalKey();
 
   void _registerColumnBounds() {
@@ -31,9 +31,25 @@ class _TaskColumnState extends State<TaskColumn> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => _registerColumnBounds(),
     );
+  }
+
+  @override
+  void didChangeMetrics() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _registerColumnBounds();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override

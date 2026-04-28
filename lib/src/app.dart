@@ -8,14 +8,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Swamp Task Management',
+      title: 'Polymarq Assessment',
       theme: ThemeData(
         primarySwatch: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       // Switch between the two screens to test them
-      // home: TaskBoardScreen(),
-      home: DocumentDashboardPage(),
+      home: TaskBoardScreen(),
+      // home: DocumentDashboardPage(),
     );
   }
 }

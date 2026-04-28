@@ -38,7 +38,9 @@ class TaskCard extends StatelessWidget {
         final drag = context.read<DragController>();
         drag.updatePosition(details.globalPosition);
 
-        final hover = drag.getHoverAtPosition(details.globalPosition);
+        final hover =
+            drag.hoveringStatus ??
+            drag.getHoverAtPosition(details.globalPosition);
 
         if (hover != null && drag.draggingTask != null) {
           context.read<TaskBloc>().add(
